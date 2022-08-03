@@ -5,17 +5,17 @@ metadata:
   name: ds-cts
 spec:
   # The number of DS servers in the topology
-  replicas: 3
+  replicas: 1
   # The resources assigned to each DS pod
   podTemplate:
     resources:
       requests:
-        memory: 3Gi
-        cpu: 2000m
+        memory: 1Gi
+        cpu: 1000m
       limits:
-        memory: 5Gi
+        memory: 1Gi
     volumeClaimSpec:
       storageClassName: fast
       resources:
         requests:
-          storage: 100Gi
+          storage: 10Gi

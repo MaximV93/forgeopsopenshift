@@ -4,25 +4,25 @@ kind: StatefulSet
 metadata:
   name: ds-cts
 spec:
-  replicas: 3
+  replicas: 1
   template:
     spec:
       containers:
         - name: ds
           resources:
             requests:
-              memory: 3Gi
-              cpu: 2000m
+              memory: 1Gi
+              cpu: 1000m
             limits:
-              memory: 5Gi
+              memory: 1Gi
       initContainers:
       - name: initialize
         resources:
           requests:
-            memory: 3Gi
-            cpu: 2000m
+            memory: 1Gi
+            cpu: 1000m
           limits:
-            memory: 5Gi
+            memory: 1Gi
   volumeClaimTemplates:
   - metadata:
       name: data
@@ -32,5 +32,5 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 100Gi
+          storage: 10Gi
       storageClassName: fast

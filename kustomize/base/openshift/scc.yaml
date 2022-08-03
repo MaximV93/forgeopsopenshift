@@ -22,7 +22,8 @@ users:
 - default
 - system:serviceaccount:secret-agent-system:secret-agent-controller-manager
 - system:serviceaccount:fr-system:default
-- system:serviceaccount:YOUR-NAMESPACE-HERE:default
+- system:serviceaccount:forgerockopenshift:default
+
 volumes:
 - configMap
 - downwardAPI

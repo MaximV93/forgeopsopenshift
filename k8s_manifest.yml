@@ -1,0 +1,1617 @@
+apiVersion: v1
+data:
+  IDM_ENVCONFIG_DIRS: /opt/openidm/resolver
+  LOGGING_PROPERTIES: /var/run/openidm/logging/logging.properties
+  OPENIDM_ANONYMOUS_PASSWORD: anonymous
+  OPENIDM_AUDIT_HANDLER_JSON_ENABLED: "false"
+  OPENIDM_AUDIT_HANDLER_STDOUT_ENABLED: "true"
+  OPENIDM_CLUSTER_REMOVE_OFFLINE_NODE_STATE: "true"
+  OPENIDM_CONFIG_REPO_ENABLED: "false"
+  OPENIDM_ICF_RETRY_DELAYSECONDS: "10"
+  OPENIDM_ICF_RETRY_MAXRETRIES: "12"
+  PROJECT_HOME: /opt/openidm
+  RCS_AGENT_CONNECTION_CHECK_SECONDS: "5"
+  RCS_AGENT_CONNECTION_GROUP_CHECK_SECONDS: "900"
+  RCS_AGENT_CONNECTION_TIMEOUT_SECONDS: "10"
+  RCS_AGENT_HOST: rcs-agent
+  RCS_AGENT_IDM_PRINCIPAL: idmPrincipal
+  RCS_AGENT_PATH: idm
+  RCS_AGENT_PORT: "80"
+  RCS_AGENT_USE_SSL: "false"
+  RCS_AGENT_WEBSOCKET_CONNECTIONS: "1"
+kind: ConfigMap
+metadata:
+  labels:
+    app: idm
+    app.kubernetes.io/component: idm
+    app.kubernetes.io/instance: idm
+    app.kubernetes.io/name: idm
+    app.kubernetes.io/part-of: forgerock
+    tier: middle
+  name: idm
+---
+apiVersion: v1
+data:
+  logging.properties: |
+    # Properties file that configures the operation of the JDK
+    # logging facility.
+    # The system will look for this configuration file, first using
+    # a System property specified at startup:
+    #
+    # >java -Djava.util.logging.config.file=myLoggingConfigFilePath
+    #
+    # If this property is not specified, then the configuration file is
+    # retrieved from its default location at:
+    #
+    # JDK_HOME/jre/lib/logging.properties
+    ############################################################
+    #      Global properties
+    ############################################################
+    # ------------------------------------------
+    # The set of handlers to be loaded upon startup.
+    # Comma-separated list of class names.
+    # (? LogManager docs say no comma here, but JDK example has comma.)
+    # StreamHandler: A simple handler for writing formatted records to an OutputStream.
+    # ConsoleHandler: A simple handler for writing formatted records to System.err
+    # FileHandler: A handler that writes formatted log records either to a single file, or to a set of rotating log files.
+    # SocketHandler: A handler that writes formatted log records to remote TCP ports.
+    # MemoryHandler: A handler that buffers log records in memory.
+    # handlers=java.util.logging.ConsoleHandler
+    # handlers=java.util.logging.FileHandler, java.util.logging.ConsoleHandler
+    # For Docker, write everything to the console
+    handlers=java.util.logging.ConsoleHandler
+    # Default global logging level.
+    # This specifies which kinds of events are logged across
+    # all loggers.  For any given facility this global level
+    # can be overriden by a facility specific level
+    # Note that the ConsoleHandler also has a separate level
+    # setting to limit messages printed to the console.
+    # Loggers and Handlers may override this level
+    .level=INFO
+    # Loggers
+    # ------------------------------------------
+    # Loggers are usually attached to packages.
+    # Here, the level for each package is specified.
+    # The global level is used by default, so levels
+    # specified here simply act as an override.
+    # The levels in descending order are:
+    #   SEVERE (highest value)
+    #   WARNING
+    #   INFO
+    #   CONFIG
+    #   FINE
+    #   FINER
+    #   FINEST (lowest value)
+    ############################################################
+    # Facility specific properties.
+    # Provides extra control for each logger.
+    ############################################################
+    #org.forgerock.openidm.provisioner.level = FINER
+    #org.forgerock.openidm.repo.level = FINER
+    #org.forgerock.openidm.recon.level = FINER
+    # OpenICF is noisy at INFO level
+    org.forgerock.openicf.level=WARNING
+    # Logs the output from OSGi logging
+    org.forgerock.openidm.Framework.level=WARNING
+    # On restart the BarURLHandler can create warning noise
+    org.activiti.osgi.BarURLHandler.level=SEVERE
+    # Suppress warnings of failed connector loading
+    org.identityconnectors.framework.impl.api.local.LocalConnectorInfoManagerImpl.level=SEVERE
+    ############################################################
+    # Handler specific properties.
+    # Describes specific configuration info for Handlers.
+    ############################################################
+    # --- ConsoleHandler ---
+    # Default: java.util.logging.ConsoleHandler.level = INFO
+    # Override of global logging level
+    #java.util.logging.ConsoleHandler.level = WARNING
+    # For Docker
+    java.util.logging.ConsoleHandler.level = INFO
+    java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter
+    # specifies the name of the filter class to be associated with this handler,
+    # defaults to {@code null} if this property is not found or has an invalid value.
+    java.util.logging.ConsoleHandler.filter=org.forgerock.openidm.logging.util.LogFilter
+    # --- FileHandler ---
+    # Override of global logging level
+    java.util.logging.FileHandler.level = ALL
+    # Naming style for the output file:
+    # (The output file is placed in the directory
+    # defined by the "user.home" System property.)
+    # java.util.logging.FileHandler.pattern = %h/java%u.log
+    java.util.logging.FileHandler.pattern = logs/openidm%u.log
+    # Limiting size of output file in bytes:
+    java.util.logging.FileHandler.limit = 5242880
+    # Number of output files to cycle through, by appending an
+    # integer to the base file name:
+    java.util.logging.FileHandler.count = 5
+    # Style of output (Simple or XML):
+    # Writes brief "human-readable" summaries of log records.
+    java.util.logging.FileHandler.formatter = java.util.logging.SimpleFormatter
+    # Writes detailed XML-structured information.
+    # java.util.logging.FileHandler.formatter = java.util.logging.XMLFormatter
+    # specifies the character set encoding name.
+    # defaults to the default platform encoding
+    java.util.logging.FileHandler.encoding = UTF-8
+kind: ConfigMap
+metadata:
+  labels:
+    app: idm
+    app.kubernetes.io/component: idm
+    app.kubernetes.io/instance: idm
+    app.kubernetes.io/name: idm
+    app.kubernetes.io/part-of: forgerock
+    tier: middle
+  name: idm-logging-properties
+---
+apiVersion: v1
+data:
+  ADMIN_CLIENT_ID: idm-admin-ui
+  AM_ADMIN_URL: https://prod.iam.example.com/am/ui-admin/
+  AM_SERVER_FQDN: prod.iam.example.com
+  AM_STORES_CTS_SERVERS: ds-cts-0.ds-cts:1636
+  AM_STORES_USER_SERVERS: ds-idrepo-0.ds-idrepo:1636
+  AM_URL: https://prod.iam.example.com/am
+  AUTORESTORE_FROM_DSBACKUP: "false"
+  CERT_ISSUER: default-issuer
+  DSBACKUP_DIRECTORY: ""
+  DSBACKUP_HOSTS: ds-cts-0,ds-idrepo-0
+  ENDUSER_CLIENT_ID: end-user-ui
+  ENDUSER_UI_URL: https://prod.iam.example.com/enduser
+  FQDN: prod.iam.example.com
+  FRAAS_LOGGING_URL: ""
+  IDM_ADMIN_URL: https://prod.iam.example.com/admin
+  IDM_EXPORT_URL: https://prod.iam.example.com/export
+  IDM_REST_URL: https://prod.iam.example.com/openidm
+  IDM_UPLOAD_URL: https://prod.iam.example.com/upload
+  LOGIN_UI_URL: https://prod.iam.example.com/login/#/service/Login
+  PLATFORM_ADMIN_URL: https://prod.iam.example.com/platform
+  PLATFORM_UI_IS_FRAAS: "false"
+  RCS_AGENT_ENABLED: "false"
+  THEME: default
+kind: ConfigMap
+metadata:
+  name: platform-config
+---
+apiVersion: v1
+data: null
+kind: Secret
+metadata:
+  labels:
+    affinity: directory
+    app: ds-cts
+    app.kubernetes.io/component: directory
+    app.kubernetes.io/instance: ds-cts
+    app.kubernetes.io/name: ds
+    app.kubernetes.io/part-of: forgerock
+  name: cloud-storage-credentials-cts
+type: Opaque
+---
+apiVersion: v1
+data: null
+kind: Secret
+metadata:
+  labels:
+    affinity: directory
+    app: ds-idrepo
+    app.kubernetes.io/component: directory
+    app.kubernetes.io/instance: ds-idrepo
+    app.kubernetes.io/name: ds
+    app.kubernetes.io/part-of: forgerock
+  name: cloud-storage-credentials-idrepo
+type: Opaque
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: ui
+    app.kubernetes.io/instance: admin-ui
+    app.kubernetes.io/name: admin-ui
+    app.kubernetes.io/part-of: forgerock
+    tier: ui
+  name: admin-ui
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: admin-ui
+    app.kubernetes.io/component: ui
+    app.kubernetes.io/instance: admin-ui
+    app.kubernetes.io/name: admin-ui
+    app.kubernetes.io/part-of: forgerock
+    tier: ui
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: am
+    app.kubernetes.io/component: am
+    app.kubernetes.io/instance: am
+    app.kubernetes.io/name: am
+    app.kubernetes.io/part-of: forgerock
+    tier: middle
+  name: am
+spec:
+  ports:
+  - name: am
+    port: 80
+    protocol: TCP
+    targetPort: 8081
+  selector:
+    app: am
+    app.kubernetes.io/component: am
+    app.kubernetes.io/instance: am
+    app.kubernetes.io/name: am
+    app.kubernetes.io/part-of: forgerock
+    tier: middle
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    affinity: directory
+    app: ds-cts
+    app.kubernetes.io/component: directory
+    app.kubernetes.io/instance: ds-cts
+    app.kubernetes.io/name: ds
+    app.kubernetes.io/part-of: forgerock
+    component: ds
+  name: ds-cts
+spec:
+  clusterIP: None
+  ports:
+  - name: admin
+    port: 4444
+  - name: ldap
+    port: 1389
+  - name: ldaps
+    port: 1636
+  - name: http
+    port: 8080
+  - name: https
+    port: 8443
+  selector:
+    affinity: directory
+    app: ds-cts
+    app.kubernetes.io/component: directory
+    app.kubernetes.io/instance: ds-cts
+    app.kubernetes.io/name: ds
+    app.kubernetes.io/part-of: forgerock
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    affinity: directory
+    app: ds-idrepo
+    app.kubernetes.io/component: directory
+    app.kubernetes.io/instance: ds-idrepo
+    app.kubernetes.io/name: ds
+    app.kubernetes.io/part-of: forgerock
+    component: ds
+  name: ds-idrepo
+spec:
+  clusterIP: None
+  ports:
+  - name: admin
+    port: 4444
+  - name: ldap
+    port: 1389
+  - name: ldaps
+    port: 1636
+  - name: http
+    port: 8080
+  - name: https
+    port: 8443
+  selector:
+    affinity: directory
+    app: ds-idrepo
+    app.kubernetes.io/component: directory
+    app.kubernetes.io/instance: ds-idrepo
+    app.kubernetes.io/name: ds
+    app.kubernetes.io/part-of: forgerock
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: ui
+    app.kubernetes.io/instance: end-user-ui
+    app.kubernetes.io/name: end-user-ui
+    app.kubernetes.io/part-of: forgerock
+    tier: ui
+  name: end-user-ui
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: end-user-ui
+    app.kubernetes.io/component: ui
+    app.kubernetes.io/instance: end-user-ui
+    app.kubernetes.io/name: end-user-ui
+    app.kubernetes.io/part-of: forgerock
+    tier: ui
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: idm
+    app.kubernetes.io/component: idm
+    app.kubernetes.io/instance: idm
+    app.kubernetes.io/name: idm
+    app.kubernetes.io/part-of: forgerock
+    tier: middle
+  name: idm
+spec:
+  ports:
+  - name: idm
+    port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: idm
+    app.kubernetes.io/component: idm
+    app.kubernetes.io/instance: idm
+    app.kubernetes.io/name: idm
+    app.kubernetes.io/part-of: forgerock
+    tier: middle
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app.kubernetes.io/component: ui
+    app.kubernetes.io/instance: login-ui
+    app.kubernetes.io/name: login-ui
+    app.kubernetes.io/part-of: forgerock
+    tier: ui
+  name: login-ui
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: login-ui
+    app.kubernetes.io/component: ui
+    app.kubernetes.io/instance: login-ui
+    app.kubernetes.io/name: login-ui
+    app.kubernetes.io/part-of: forgerock
+    tier: ui
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: ui
+    app.kubernetes.io/instance: admin-ui
+    app.kubernetes.io/name: admin-ui
+    app.kubernetes.io/part-of: forgerock
+    tier: ui
+  name: admin-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: admin-ui
+      app.kubernetes.io/component: ui
+      app.kubernetes.io/instance: admin-ui
+      app.kubernetes.io/name: admin-ui
+      app.kubernetes.io/part-of: forgerock
+      tier: ui
+  template:
+    metadata:
+      labels:
+        app: admin-ui
+        app.kubernetes.io/component: ui
+        app.kubernetes.io/instance: admin-ui
+        app.kubernetes.io/name: admin-ui
+        app.kubernetes.io/part-of: forgerock
+        tier: ui
+    spec:
+      containers:
+      - env:
+        - name: SUBFOLDER
+          value: platform
+        envFrom:
+        - configMapRef:
+            name: platform-config
+        image: gcr.io/forgerock-io/platform-admin-ui:7.2.0
+        imagePullPolicy: Always
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - /usr/sbin/nginx
+              - -s
+              - quit
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+        name: admin-ui
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+        resources:
+          limits:
+            memory: 100Mi
+          requests:
+            cpu: 10m
+            memory: 100Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: am
+    app.kubernetes.io/component: am
+    app.kubernetes.io/instance: am
+    app.kubernetes.io/name: am
+    app.kubernetes.io/part-of: forgerock
+    tier: middle
+  name: am
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: am
+      app.kubernetes.io/component: am
+      app.kubernetes.io/instance: am
+      app.kubernetes.io/name: am
+      app.kubernetes.io/part-of: forgerock
+      tier: middle
+  template:
+    metadata:
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+      labels:
+        app: am
+        app.kubernetes.io/component: am
+        app.kubernetes.io/instance: am
+        app.kubernetes.io/name: am
+        app.kubernetes.io/part-of: forgerock
+        tier: middle
+    spec:
+      containers:
+      - command:
+        - bash
+        - /home/forgerock/docker-entrypoint.sh
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: AM_STORES_SSL_ENABLED
+          value: "true"
+        - name: TRUSTSTORE_PATH
+          value: /home/forgerock/amtruststore
+        - name: TRUSTSTORE_PASSWORD
+          value: changeit
+        - name: AM_STORES_USER_TYPE
+          value: LDAPv3ForForgeRockIAM
+        envFrom:
+        - secretRef:
+            name: am-env-secrets
+        - configMapRef:
+            name: platform-config
+        - secretRef:
+            name: amster-env-secrets
+        - secretRef:
+            name: ds-env-secrets
+        image: registry-fsf.services.belgium.be:5000/bdiw/bediw-forgerock/am:dda3f474a@sha256:893df3c58d055ce980e1c7ccbbe66b6d042d51a402dc3f7e684c446938ee3c2f
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /am/json/health/live
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+        name: openam
+        ports:
+        - containerPort: 8080
+          name: http
+        readinessProbe:
+          httpGet:
+            path: /am/json/health/ready
+            port: 8080
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          timeoutSeconds: 5
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 2000m
+            memory: 1Gi
+        startupProbe:
+          failureThreshold: 40
+          httpGet:
+            path: /am/json/health/live
+            port: 8080
+          periodSeconds: 10
+        volumeMounts:
+        - mountPath: /home/forgerock/amtruststore
+          name: new-truststore
+          readOnly: true
+          subPath: amtruststore
+        - mountPath: /var/run/secrets/am
+          name: am-secrets
+        - mountPath: /var/run/secrets/amster
+          name: amster-key
+        - mountPath: /home/forgerock/openam
+          name: fbc
+      initContainers:
+      - command:
+        - /bin/bash
+        - -c
+        - |
+          if [ -d /fbc/config ];
+          then
+            echo "Existing openam configuration found. Skipping copy"
+          else
+            echo "Copying docker image configuration files to the shared volume"
+            cd /home/forgerock/openam
+            cp -r .git .homeVersion * /fbc
+          fi
+        image: registry-fsf.services.belgium.be:5000/bdiw/bediw-forgerock/am:dda3f474a@sha256:893df3c58d055ce980e1c7ccbbe66b6d042d51a402dc3f7e684c446938ee3c2f
+        imagePullPolicy: Always
+        name: fbc-init
+        volumeMounts:
+        - mountPath: /fbc
+          name: fbc
+      - command:
+        - /home/forgerock/import-pem-certs.sh
+        env:
+        - name: TRUSTSTORE_PATH
+          value: /truststore/amtruststore
+        - name: TRUSTSTORE_PASSWORD
+          value: changeit
+        - name: AM_PEM_TRUSTSTORE
+          value: /var/run/secrets/truststore/cacerts
+        image: registry-fsf.services.belgium.be:5000/bdiw/bediw-forgerock/am:dda3f474a@sha256:893df3c58d055ce980e1c7ccbbe66b6d042d51a402dc3f7e684c446938ee3c2f
+        imagePullPolicy: Always
+        name: truststore-init
+        volumeMounts:
+        - mountPath: /truststore
+          name: new-truststore
+        - mountPath: /var/run/secrets/truststore
+          name: truststore
+      securityContext:
+        runAsGroup: 0
+        runAsUser: 11111
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - emptyDir: {}
+        name: fbc
+      - name: am-secrets
+        projected:
+          sources:
+          - secret:
+              name: am-passwords
+          - secret:
+              name: am-keystore
+      - name: amster-key
+        secret:
+          items:
+          - key: id_rsa.pub
+            path: authorized_keys
+          secretName: amster
+      - name: truststore
+        secret:
+          secretName: truststore-pem
+      - emptyDir: {}
+        name: new-truststore
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: ui
+    app.kubernetes.io/instance: end-user-ui
+    app.kubernetes.io/name: end-user-ui
+    app.kubernetes.io/part-of: forgerock
+    tier: ui
+  name: end-user-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: end-user-ui
+      app.kubernetes.io/component: ui
+      app.kubernetes.io/instance: end-user-ui
+      app.kubernetes.io/name: end-user-ui
+      app.kubernetes.io/part-of: forgerock
+      tier: ui
+  template:
+    metadata:
+      labels:
+        app: end-user-ui
+        app.kubernetes.io/component: ui
+        app.kubernetes.io/instance: end-user-ui
+        app.kubernetes.io/name: end-user-ui
+        app.kubernetes.io/part-of: forgerock
+        tier: ui
+    spec:
+      containers:
+      - env:
+        - name: SUBFOLDER
+          value: enduser
+        envFrom:
+        - configMapRef:
+            name: platform-config
+        image: gcr.io/forgerock-io/platform-enduser-ui:7.2.0
+        imagePullPolicy: Always
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - /usr/sbin/nginx
+              - -s
+              - quit
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+        name: end-user-ui
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+        resources:
+          limits:
+            memory: 100Mi
+          requests:
+            cpu: 10m
+            memory: 100Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: idm
+    app.kubernetes.io/component: idm
+    app.kubernetes.io/instance: idm
+    app.kubernetes.io/name: idm
+    app.kubernetes.io/part-of: forgerock
+    tier: middle
+  name: idm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: idm
+      app.kubernetes.io/component: idm
+      app.kubernetes.io/instance: idm
+      app.kubernetes.io/name: idm
+      app.kubernetes.io/part-of: forgerock
+      tier: middle
+  template:
+    metadata:
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+      labels:
+        app: idm
+        app.kubernetes.io/component: idm
+        app.kubernetes.io/instance: idm
+        app.kubernetes.io/name: idm
+        app.kubernetes.io/part-of: forgerock
+        tier: middle
+    spec:
+      containers:
+      - env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: OPENIDM_REPO_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: dirmanager.pw
+              name: ds-passwords
+        - name: USERSTORE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: dirmanager.pw
+              name: ds-passwords
+        - name: RS_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: IDM_RS_CLIENT_SECRET
+              name: amster-env-secrets
+        - name: RCS_AGENT_IDM_SECRET
+          valueFrom:
+            secretKeyRef:
+              key: AGENT_IDM_SECRET
+              name: rcs-agent-env-secrets
+        - name: OPENIDM_ICF_RETRY_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              key: RCS_AGENT_ENABLED
+              name: platform-config
+        - name: OPENIDM_ICF_RETRY_UPDATES_ENABLED
+          valueFrom:
+            configMapKeyRef:
+              key: RCS_AGENT_ENABLED
+              name: platform-config
+        envFrom:
+        - configMapRef:
+            name: idm
+        - secretRef:
+            name: idm-env-secrets
+        image: registry-fsf.services.belgium.be:5000/bdiw/bediw-forgerock/idm:0d1dedaf0@sha256:822df102e5c15a28900132a5a130aba03c3ddfec7d8e8fee881f85e2fcf476ee
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            httpHeaders:
+            - name: X-OpenIDM-Username
+              value: anonymous
+            - name: X-OpenIDM-Password
+              value: anonymous
+            - name: X-OpenIDM-NoSession
+              value: "true"
+            path: /openidm/info/ping
+            port: 8080
+          initialDelaySeconds: 120
+          periodSeconds: 60
+          timeoutSeconds: 5
+        name: openidm
+        ports:
+        - containerPort: 8080
+        - containerPort: 8443
+        readinessProbe:
+          httpGet:
+            httpHeaders:
+            - name: X-OpenIDM-Username
+              value: anonymous
+            - name: X-OpenIDM-Password
+              value: anonymous
+            - name: X-OpenIDM-NoSession
+              value: "true"
+            path: /openidm/info/ping
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 1500m
+            memory: 1Gi
+        volumeMounts:
+        - mountPath: /var/run/secrets/idm
+          name: idm-secrets
+        - mountPath: /opt/openidm/idmtruststore
+          name: new-truststore
+          readOnly: true
+          subPath: idmtruststore
+        - mountPath: /opt/openidm/logs
+          name: logs
+        - mountPath: /opt/openidm/audit
+          name: audit-logs
+        - mountPath: /var/run/openidm/logging
+          name: idm-logging-properties
+        - mountPath: /opt/openidm/conf
+          name: fbc
+          subPath: conf
+        - mountPath: /opt/openidm/ui
+          name: fbc
+          subPath: ui
+        - mountPath: /opt/openidm/script
+          name: fbc
+          subPath: script
+      initContainers:
+      - command:
+        - /bin/bash
+        - -c
+        - |
+          if [ -d /fbc/conf ];
+          then
+            echo "Existing openidm configuration found. Skipping copy"
+          else
+            echo "Copying docker image configuration files to the shared volume"
+            cd /opt/openidm
+            cp -vr ui conf script /fbc
+          fi
+        image: registry-fsf.services.belgium.be:5000/bdiw/bediw-forgerock/idm:0d1dedaf0@sha256:822df102e5c15a28900132a5a130aba03c3ddfec7d8e8fee881f85e2fcf476ee
+        imagePullPolicy: Always
+        name: fbc-init
+        volumeMounts:
+        - mountPath: /fbc
+          name: fbc
+      - command:
+        - /opt/openidm/bin/import-pem-certs.sh
+        env:
+        - name: TRUSTSTORE_PATH
+          value: /truststore/idmtruststore
+        - name: TRUSTSTORE_PASSWORD
+          value: changeit
+        - name: IDM_PEM_TRUSTSTORE
+          value: /var/run/secrets/truststore/cacerts
+        image: registry-fsf.services.belgium.be:5000/bdiw/bediw-forgerock/idm:0d1dedaf0@sha256:822df102e5c15a28900132a5a130aba03c3ddfec7d8e8fee881f85e2fcf476ee
+        imagePullPolicy: Always
+        name: truststore-init
+        volumeMounts:
+        - mountPath: /truststore
+          name: new-truststore
+        - mountPath: /var/run/secrets/truststore
+          name: truststore
+      terminationGracePeriodSeconds: 10
+      volumes:
+      - emptyDir: {}
+        name: fbc
+      - name: idm-secrets
+        secret:
+          secretName: idm
+      - emptyDir: {}
+        name: new-truststore
+      - name: truststore
+        secret:
+          secretName: truststore-pem
+      - emptyDir: {}
+        name: logs
+      - emptyDir: {}
+        name: audit-logs
+      - configMap:
+          name: idm-logging-properties
+        name: idm-logging-properties
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: ui
+    app.kubernetes.io/instance: login-ui
+    app.kubernetes.io/name: login-ui
+    app.kubernetes.io/part-of: forgerock
+    tier: ui
+  name: login-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: login-ui
+      app.kubernetes.io/component: ui
+      app.kubernetes.io/instance: login-ui
+      app.kubernetes.io/name: login-ui
+      app.kubernetes.io/part-of: forgerock
+      tier: ui
+  template:
+    metadata:
+      labels:
+        app: login-ui
+        app.kubernetes.io/component: ui
+        app.kubernetes.io/instance: login-ui
+        app.kubernetes.io/name: login-ui
+        app.kubernetes.io/part-of: forgerock
+        tier: ui
+    spec:
+      containers:
+      - env:
+        - name: SUBFOLDER
+          value: am/XUI
+        envFrom:
+        - configMapRef:
+            name: platform-config
+        image: gcr.io/forgerock-io/platform-login-ui:7.2.0
+        imagePullPolicy: Always
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - /usr/sbin/nginx
+              - -s
+              - quit
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+        name: login-ui
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+        resources:
+          limits:
+            memory: 100Mi
+          requests:
+            cpu: 10m
+            memory: 100Mi
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    affinity: directory
+    app: ds-cts
+    app.kubernetes.io/component: directory
+    app.kubernetes.io/instance: ds-cts
+    app.kubernetes.io/name: ds
+    app.kubernetes.io/part-of: forgerock
+    tier: ds
+  name: ds-cts
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      affinity: directory
+      app: ds-cts
+      app.kubernetes.io/component: directory
+      app.kubernetes.io/instance: ds-cts
+      app.kubernetes.io/name: ds
+      app.kubernetes.io/part-of: forgerock
+  serviceName: ds-cts
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+      labels:
+        affinity: directory
+        app: ds-cts
+        app.kubernetes.io/component: directory
+        app.kubernetes.io/instance: ds-cts
+        app.kubernetes.io/name: ds
+        app.kubernetes.io/part-of: forgerock
+        tier: ds
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+              - key: ds
+                operator: Exists
+            weight: 100
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: affinity
+                  operator: In
+                  values:
+                  - directory
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      containers:
+      - args:
+        - start-ds
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: DSBACKUP_HOSTS
+          valueFrom:
+            configMapKeyRef:
+              key: DSBACKUP_HOSTS
+              name: platform-config
+        - name: DSBACKUP_DIRECTORY
+          valueFrom:
+            configMapKeyRef:
+              key: DSBACKUP_DIRECTORY
+              name: platform-config
+        envFrom:
+        - secretRef:
+            name: cloud-storage-credentials-cts
+        image: registry-fsf.services.belgium.be:5000/bdiw/bediw-forgerock/ds-cts:276266fb4@sha256:8960ffcebefa9e18aa555944df482b9b02f8a4f0e84f82ff43f61e09d27b7a69
+        imagePullPolicy: Always
+        name: ds
+        ports:
+        - containerPort: 1389
+          name: ldap
+        - containerPort: 1636
+          name: ldaps
+        - containerPort: 4444
+          name: admin
+        - containerPort: 8989
+          name: replication
+        - containerPort: 8080
+          name: http
+        - containerPort: 8443
+          name: https
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 2000m
+            memory: 1Gi
+        volumeMounts:
+        - mountPath: /opt/opendj/data
+          name: data
+        - mountPath: /opt/opendj/secrets
+          name: secrets
+        - mountPath: /var/run/secrets/opendj
+          name: secrets
+        - mountPath: /opt/opendj/pem-keys-directory/ssl-key-pair
+          name: secrets
+          subPath: ssl-key-pair-combined.pem
+        - mountPath: /opt/opendj/pem-keys-directory/master-key
+          name: secrets
+          subPath: master-key-pair-combined.pem
+        - mountPath: /opt/opendj/pem-trust-directory/cacerts.pem
+          name: truststore
+          subPath: cacerts
+        - mountPath: /var/run/secrets/cloud-credentials-cache/
+          name: cloud-credentials-cache
+      initContainers:
+      - command:
+        - /opt/opendj/scripts/init-and-restore.sh
+        env:
+        - name: DS_SET_UID_ADMIN_AND_MONITOR_PASSWORDS
+          value: "true"
+        - name: DS_UID_MONITOR_PASSWORD_FILE
+          value: /var/run/secrets/opendj-passwords/monitor.pw
+        - name: DS_UID_ADMIN_PASSWORD_FILE
+          value: /var/run/secrets/opendj-passwords/dirmanager.pw
+        - name: DSBACKUP_HOSTS
+          valueFrom:
+            configMapKeyRef:
+              key: DSBACKUP_HOSTS
+              name: platform-config
+        - name: DSBACKUP_DIRECTORY
+          valueFrom:
+            configMapKeyRef:
+              key: DSBACKUP_DIRECTORY
+              name: platform-config
+        - name: AUTORESTORE_FROM_DSBACKUP
+          valueFrom:
+            configMapKeyRef:
+              key: AUTORESTORE_FROM_DSBACKUP
+              name: platform-config
+        envFrom:
+        - secretRef:
+            name: cloud-storage-credentials-cts
+        image: registry-fsf.services.belgium.be:5000/bdiw/bediw-forgerock/ds-cts:276266fb4@sha256:8960ffcebefa9e18aa555944df482b9b02f8a4f0e84f82ff43f61e09d27b7a69
+        imagePullPolicy: Always
+        name: initialize
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 2000m
+            memory: 1Gi
+        volumeMounts:
+        - mountPath: /opt/opendj/data
+          name: data
+        - mountPath: /opt/opendj/secrets
+          name: secrets
+        - mountPath: /var/run/secrets/opendj
+          name: secrets
+        - mountPath: /opt/opendj/pem-keys-directory/ssl-key-pair
+          name: secrets
+          subPath: ssl-key-pair-combined.pem
+        - mountPath: /opt/opendj/pem-keys-directory/master-key
+          name: secrets
+          subPath: master-key-pair-combined.pem
+        - mountPath: /opt/opendj/pem-trust-directory/cacerts.pem
+          name: truststore
+          subPath: cacerts
+        - mountPath: /var/run/secrets/cloud-credentials-cache/
+          name: cloud-credentials-cache
+        - mountPath: /var/run/secrets/opendj-passwords
+          name: passwords
+      securityContext:
+        fsGroup: 0
+        runAsGroup: 0
+        runAsUser: 11111
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - key: WorkerDedicatedDS
+        operator: Exists
+      volumes:
+      - name: secrets
+        secret:
+          secretName: ds
+      - name: passwords
+        secret:
+          secretName: ds-passwords
+      - emptyDir: {}
+        name: cloud-credentials-cache
+      - name: truststore
+        secret:
+          defaultMode: 384
+          secretName: truststore-pem
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - metadata:
+      annotations:
+        pv.beta.kubernetes.io/gid: "0"
+      name: data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: fast
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    affinity: directory
+    app: ds-idrepo
+    app.kubernetes.io/component: directory
+    app.kubernetes.io/instance: ds-idrepo
+    app.kubernetes.io/name: ds
+    app.kubernetes.io/part-of: forgerock
+    tier: ds
+  name: ds-idrepo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      affinity: directory
+      app: ds-idrepo
+      app.kubernetes.io/component: directory
+      app.kubernetes.io/instance: ds-idrepo
+      app.kubernetes.io/name: ds
+      app.kubernetes.io/part-of: forgerock
+  serviceName: ds-idrepo
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+      labels:
+        affinity: directory
+        app: ds-idrepo
+        app.kubernetes.io/component: directory
+        app.kubernetes.io/instance: ds-idrepo
+        app.kubernetes.io/name: ds
+        app.kubernetes.io/part-of: forgerock
+        tier: ds
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              matchExpressions:
+              - key: ds
+                operator: Exists
+            weight: 100
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: affinity
+                  operator: In
+                  values:
+                  - directory
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      containers:
+      - args:
+        - start-ds
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: DSBACKUP_HOSTS
+          valueFrom:
+            configMapKeyRef:
+              key: DSBACKUP_HOSTS
+              name: platform-config
+        - name: DSBACKUP_DIRECTORY
+          valueFrom:
+            configMapKeyRef:
+              key: DSBACKUP_DIRECTORY
+              name: platform-config
+        envFrom:
+        - secretRef:
+            name: cloud-storage-credentials-idrepo
+        image: registry-fsf.services.belgium.be:5000/bdiw/bediw-forgerock/ds-idrepo:276266fb4@sha256:9a3bd2648c3d81e0dca80dda9f737ca3c0866a70762bcb9e094fbedbb5209bb7
+        imagePullPolicy: Always
+        name: ds
+        ports:
+        - containerPort: 1389
+          name: ldap
+        - containerPort: 1636
+          name: ldaps
+        - containerPort: 4444
+          name: admin
+        - containerPort: 8989
+          name: replication
+        - containerPort: 8080
+          name: http
+        - containerPort: 8443
+          name: https
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 1500m
+            memory: 1Gi
+        volumeMounts:
+        - mountPath: /opt/opendj/data
+          name: data
+        - mountPath: /opt/opendj/secrets
+          name: secrets
+        - mountPath: /var/run/secrets/opendj
+          name: secrets
+        - mountPath: /opt/opendj/pem-keys-directory/ssl-key-pair
+          name: secrets
+          subPath: ssl-key-pair-combined.pem
+        - mountPath: /opt/opendj/pem-keys-directory/master-key
+          name: secrets
+          subPath: master-key-pair-combined.pem
+        - mountPath: /opt/opendj/pem-trust-directory/cacerts.pem
+          name: truststore
+          subPath: cacerts
+        - mountPath: /var/run/secrets/cloud-credentials-cache/
+          name: cloud-credentials-cache
+      initContainers:
+      - command:
+        - /opt/opendj/scripts/init-and-restore.sh
+        env:
+        - name: DS_SET_UID_ADMIN_AND_MONITOR_PASSWORDS
+          value: "true"
+        - name: DS_UID_MONITOR_PASSWORD_FILE
+          value: /var/run/secrets/opendj-passwords/monitor.pw
+        - name: DS_UID_ADMIN_PASSWORD_FILE
+          value: /var/run/secrets/opendj-passwords/dirmanager.pw
+        - name: DSBACKUP_HOSTS
+          valueFrom:
+            configMapKeyRef:
+              key: DSBACKUP_HOSTS
+              name: platform-config
+        - name: DSBACKUP_DIRECTORY
+          valueFrom:
+            configMapKeyRef:
+              key: DSBACKUP_DIRECTORY
+              name: platform-config
+        - name: AUTORESTORE_FROM_DSBACKUP
+          valueFrom:
+            configMapKeyRef:
+              key: AUTORESTORE_FROM_DSBACKUP
+              name: platform-config
+        envFrom:
+        - secretRef:
+            name: cloud-storage-credentials-idrepo
+        image: registry-fsf.services.belgium.be:5000/bdiw/bediw-forgerock/ds-idrepo:276266fb4@sha256:9a3bd2648c3d81e0dca80dda9f737ca3c0866a70762bcb9e094fbedbb5209bb7
+        imagePullPolicy: Always
+        name: initialize
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 1500m
+            memory: 1Gi
+        volumeMounts:
+        - mountPath: /opt/opendj/data
+          name: data
+        - mountPath: /opt/opendj/secrets
+          name: secrets
+        - mountPath: /var/run/secrets/opendj
+          name: secrets
+        - mountPath: /opt/opendj/pem-keys-directory/ssl-key-pair
+          name: secrets
+          subPath: ssl-key-pair-combined.pem
+        - mountPath: /opt/opendj/pem-keys-directory/master-key
+          name: secrets
+          subPath: master-key-pair-combined.pem
+        - mountPath: /opt/opendj/pem-trust-directory/cacerts.pem
+          name: truststore
+          subPath: cacerts
+        - mountPath: /var/run/secrets/cloud-credentials-cache/
+          name: cloud-credentials-cache
+        - mountPath: /var/run/secrets/opendj-passwords
+          name: passwords
+      securityContext:
+        fsGroup: 0
+        runAsGroup: 0
+        runAsUser: 11111
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - key: WorkerDedicatedDS
+        operator: Exists
+      volumes:
+      - name: secrets
+        secret:
+          secretName: ds
+      - name: passwords
+        secret:
+          secretName: ds-passwords
+      - emptyDir: {}
+        name: cloud-credentials-cache
+      - name: truststore
+        secret:
+          defaultMode: 384
+          secretName: truststore-pem
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - metadata:
+      annotations:
+        pv.beta.kubernetes.io/gid: "0"
+      name: data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+      storageClassName: fast
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    app: amster
+    app.kubernetes.io/component: am
+    app.kubernetes.io/instance: amster
+    app.kubernetes.io/name: amster
+    app.kubernetes.io/part-of: forgerock
+  name: amster
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: amster
+        app.kubernetes.io/component: am
+        app.kubernetes.io/instance: amster
+        app.kubernetes.io/name: amster
+        app.kubernetes.io/part-of: forgerock
+        tier: middle
+    spec:
+      containers:
+      - args:
+        - bash
+        - -c
+        - sleep ${DURATION:-10}
+        envFrom:
+        - configMapRef:
+            name: amster-retain
+            optional: true
+        image: registry-fsf.services.belgium.be:5000/bdiw/bediw-forgerock/amster:614bcca62@sha256:e7d68165eb05dae5cdc06ae5458a30b1e30960f47120d889366ca752663885be
+        imagePullPolicy: Always
+        name: pause
+        readinessProbe:
+          exec:
+            command:
+            - cat
+            - /etc/hosts
+          initialDelaySeconds: 1
+        volumeMounts:
+        - mountPath: /var/tmp/amster
+          name: export-files
+      initContainers:
+      - env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        envFrom:
+        - configMapRef:
+            name: platform-config
+        - secretRef:
+            name: amster-env-secrets
+        - secretRef:
+            name: ds-env-secrets
+        image: registry-fsf.services.belgium.be:5000/bdiw/bediw-forgerock/amster:614bcca62@sha256:e7d68165eb05dae5cdc06ae5458a30b1e30960f47120d889366ca752663885be
+        imagePullPolicy: Always
+        name: amster
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 512Mi
+        volumeMounts:
+        - mountPath: /var/run/secrets/amster
+          name: amster-secrets
+          readOnly: true
+        - mountPath: /var/tmp/amster
+          name: export-files
+      restartPolicy: Never
+      terminationGracePeriodSeconds: 0
+      volumes:
+      - name: amster-secrets
+        secret:
+          secretName: amster
+      - configMap:
+          name: platform-config
+        name: platform-config
+      - emptyDir: {}
+        name: export-files
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    app: ldif-importer
+    app.kubernetes.io/component: directory
+    app.kubernetes.io/instance: ldif-importer
+    app.kubernetes.io/name: ldif-importer
+    app.kubernetes.io/part-of: forgerock
+  name: ldif-importer
+spec:
+  template:
+    metadata:
+      labels:
+        app: ldif-importer
+        app.kubernetes.io/component: directory
+        app.kubernetes.io/instance: ldif-importer
+        app.kubernetes.io/name: ldif-importer
+        app.kubernetes.io/part-of: forgerock
+    spec:
+      containers:
+      - envFrom:
+        - secretRef:
+            name: ds-env-secrets
+        image: gcr.io/forgerock-io/ldif-importer:7-stable
+        name: ldif-importer
+        volumeMounts:
+        - mountPath: /var/run/secrets/opendj-passwords
+          name: passwords
+      restartPolicy: Never
+      securityContext:
+        fsGroup: 0
+        runAsUser: 11111
+      volumes:
+      - name: passwords
+        secret:
+          secretName: ds-passwords
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: default-issuer
+    haproxy.router.openshift.io/cookie_name: route
+    nginx.ingress.kubernetes.io/affinity: cookie
+    nginx.ingress.kubernetes.io/body-size: 64m
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      add_header X-ForgeRock-TransactionId $req_id;
+      proxy_set_header X-ForgeRock-TransactionId $req_id;
+    nginx.ingress.kubernetes.io/enable-cors: "false"
+    nginx.ingress.kubernetes.io/proxy-body-size: 64m
+    nginx.ingress.kubernetes.io/proxy-buffer-size: 16k
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    nginx.ingress.kubernetes.io/send-timeout: "600"
+    nginx.ingress.kubernetes.io/session-cookie-hash: sha1
+    nginx.ingress.kubernetes.io/session-cookie-name: route
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/websocket-services: rcs-agent
+    nginx.org/websocket-services: rcs-agent
+  name: forgerock
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: prod.iam.example.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: am
+            port:
+              number: 80
+        path: /am
+        pathType: Prefix
+      - backend:
+          service:
+            name: idm
+            port:
+              number: 80
+        path: /openidm
+        pathType: Prefix
+      - backend:
+          service:
+            name: idm
+            port:
+              number: 80
+        path: /upload
+        pathType: Prefix
+      - backend:
+          service:
+            name: idm
+            port:
+              number: 80
+        path: /export
+        pathType: Prefix
+      - backend:
+          service:
+            name: idm
+            port:
+              number: 80
+        path: /admin
+        pathType: Prefix
+      - backend:
+          service:
+            name: idm
+            port:
+              number: 80
+        path: /openicf
+        pathType: Prefix
+      - backend:
+          service:
+            name: rcs-agent
+            port:
+              number: 80
+        path: /rcs
+        pathType: Prefix
+      - backend:
+          service:
+            name: end-user-ui
+            port:
+              number: 8080
+        path: /enduser
+        pathType: Prefix
+      - backend:
+          service:
+            name: admin-ui
+            port:
+              number: 8080
+        path: /platform
+        pathType: Prefix
+      - backend:
+          service:
+            name: login-ui
+            port:
+              number: 8080
+        path: /am/XUI
+        pathType: Prefix
+  tls:
+  - hosts:
+    - prod.iam.example.com
+    secretName: sslcert
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: default-issuer
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  name: ig-web
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: prod.iam.example.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: ig
+            port:
+              number: 8080
+        path: /ig(/|$)(.*)
+        pathType: Prefix
+  tls:
+  - hosts:
+    - prod.iam.example.com
+    secretName: sslcert

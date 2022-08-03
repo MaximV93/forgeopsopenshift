@@ -60,11 +60,11 @@ REQ_VERSIONS ={
         'MAX': 'v100.0.0',
     },
     'kubectl': {
-        'MIN': 'v1.20.0',
+        'MIN': 'v1.19.0',
         'MAX': 'v100.0.0',
     },
     'kubernetes':{
-        'MIN':'v1.19.1',
+        'MIN':'v1.19.0',
         'MAX':'v100.0.0',
     },
     'kustomize': {
@@ -312,7 +312,7 @@ def wait_for_ds(ns, directoryservices_name, timeout_secs=600):
     directoryservices_name: name of the DS deployment to evaluate.
     timeout_secs: timeout in secs.
     """
-    _runwithtimeout(_waitforresource, [ns, 'statefulset', directoryservices_name], 30)
+    _runwithtimeout(_waitforresource, [ns, 'statefulset', directoryservices_name], 30000)
     run('kubectl',
         f'-n {ns} rollout status --watch statefulset {directoryservices_name} --timeout={timeout_secs}s')
     _runwithtimeout(_waitfords, [ns, directoryservices_name], timeout_secs)
@@ -323,7 +323,7 @@ def wait_for_am(ns, timeout_secs=600):
     ns: Target namespace.
     timeout_secs: timeout in secs.
     """
-    _runwithtimeout(_waitforresource, [ns, 'deployment', 'am'], 30)
+    _runwithtimeout(_waitforresource, [ns, 'deployment', 'am'], 30000)
     return run('kubectl', f'-n {ns} wait --for=condition=Available deployment -l app.kubernetes.io/name=am --timeout={timeout_secs}s')
 
 def wait_for_amster(ns, timeout_secs=600):
@@ -332,7 +332,7 @@ def wait_for_amster(ns, timeout_secs=600):
     ns: target namespace.
     timeout_secs: timeout in secs.
     """
-    _runwithtimeout(_waitforresource, [ns, 'job', 'amster'], 30)
+    _runwithtimeout(_waitforresource, [ns, 'job', 'amster'], 30000)
     return run('kubectl', f'-n {ns} wait --for=condition=Ready pod -l app.kubernetes.io/name=amster --timeout={timeout_secs}s')
 
 def wait_for_idm(ns, timeout_secs=600):
@@ -341,7 +341,7 @@ def wait_for_idm(ns, timeout_secs=600):
     ns: target namespace.
     timeout_secs: timeout in secs.
     """
-    _runwithtimeout(_waitforresource, [ns, 'deployment', 'idm'], 30)
+    _runwithtimeout(_waitforresource, [ns, 'deployment', 'idm'], 30000)
     return run('kubectl', f'-n {ns} wait --for=condition=Ready pod -l app.kubernetes.io/name=idm --timeout={timeout_secs}s')
 
 def generate_package(component, size, ns, fqdn, ctx, custom_path=None, src_profile_dir=None):
