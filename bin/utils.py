@@ -652,8 +652,8 @@ def secretagent(k8s_op, tag='latest'):
         message('\nWaiting for secret agent operator...')
         time.sleep(5)
         run('kubectl', 'wait --for=condition=Established crd secretagentconfigurations.secret-agent.secrets.forgerock.io --timeout=30s')
-        run('kubectl', '-n secret-agent-system wait --for=condition=available deployment  --all --timeout=120s')
-        run('kubectl', '-n secret-agent-system wait --for=condition=ready pod --all --timeout=120s')
+        run('kubectl', '-n secret-agent-system wait --for=condition=available deployment  --all --timeout=600s')
+        run('kubectl', '-n secret-agent-system wait --for=condition=ready pod --all --timeout=600s')
         print()
 
 
@@ -673,7 +673,7 @@ def dsoperator(k8s_op, tag='latest'):
         message('\nWaiting for ds-operator...')
         time.sleep(5)
         run('kubectl', 'wait --for=condition=Established crd directoryservices.directory.forgerock.io --timeout=30s')
-        run('kubectl', '-n fr-system wait --for=condition=available deployment  --all --timeout=120s')
+        run('kubectl', '-n fr-system wait --for=condition=available deployment  --all --timeout=600s')
 
 
 def _install_certmanager_issuer():
