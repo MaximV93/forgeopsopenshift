@@ -60,7 +60,7 @@ REQ_VERSIONS ={
         'MAX': 'v100.0.0',
     },
     'kubectl': {
-        'MIN': 'v1.19.0',
+        'MIN': 'v0.23.0',
         'MAX': 'v100.0.0',
     },
     'kubernetes':{

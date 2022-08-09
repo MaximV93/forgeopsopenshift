@@ -23,12 +23,19 @@ ${OC_LOGIN_COMMAND}
 
 oc new-project forgerockopenshift --display-name 'Forgerock'
 oc project forgerockopenshift
+
+echo "Sleeping for a 120s so that the macbook can run background processes"
+sleep 120
+
+
 kubectl apply -f kustomize/base/openshift/scc.yaml
 kubectl apply -f kustomize/base/openshift/ds-operator-role.yaml
 kubectl apply -f kustomize/base/openshift/standard.yml
 kubectl apply -f kustomize/base/openshift/fast.yml
 kubectl patch pv pv0014 pv0015 pv0016 pv0017 --type merge -p '{"spec":{"storageClassName": "fast"}}'
 bin/certmanager-deploy.sh
+echo "Sleeping for a 60s so that the macbook can run background processes"
+sleep 60
 bin/ds-operator install
 kubectl apply -f https://github.com/ForgeRock/secret-agent/releases/latest/download/secret-agent.yaml
 sleep 30
