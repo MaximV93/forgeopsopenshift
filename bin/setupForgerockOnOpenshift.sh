@@ -60,7 +60,7 @@ kubectl apply -k kustomize/base/secrets/
 sleep 60
 kubectl get sac
 sleep 60
-skaffold config set default-repo docker.io/$YOURDOCKERUSERNAME  -k forgerockopenshift/api-crc-testing:6443/kube:admin
+skaffold config set default-repo docker.io/$YOURDOCKERUSERNAME  -k forgerockopenshift/api-crc-testing:6443/kubeadmin
 skaffold run --profile small
 bin/forgeops info
 
