@@ -8,7 +8,8 @@ read YOURDOCKERPASSWORD
 
 docker login -u $YOURDOCKERUSERNAME -p $YOURDOCKERPASSWORD docker.io/$YOURDOCKERUSERNAME
 
-crc config set cpus 8 set memory 12288
+crc config set cpus 8
+crc config set memory 14366
 crc setup
 echo "Go to https://console.redhat.com/openshift/create/local and copy the pull secret. You will need to enter this in the next step (Enter to continue): "
 read CONTINUE
