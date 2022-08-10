@@ -22,17 +22,24 @@ echo "Click on display token and copy the OC login command entirly and paste it 
 read OC_LOGIN_COMMAND
 ${OC_LOGIN_COMMAND}
 
+echo "sleeping f or a 120 seconds before creating the project"
+sleep 120
+
 oc new-project forgerockopenshift --display-name 'Forgerock'
 oc project forgerockopenshift
 
 echo "Sleeping for a 120s so that the macbook can run background processes"
 sleep 120
 
-
+echo "creating scc"
 kubectl apply -f kustomize/base/openshift/scc.yaml
+echo "creating ds operator"
 kubectl apply -f kustomize/base/openshift/ds-operator-role.yaml
+echo "create storage standard"
 kubectl apply -f kustomize/base/openshift/standard.yml
+echo "create storage fast"
 kubectl apply -f kustomize/base/openshift/fast.yml
+echo "apply patches to storage"
 kubectl patch pv pv0014 pv0015 pv0016 pv0017 --type merge -p '{"spec":{"storageClassName": "fast"}}'
 
 echo "Sleeping before certdeploy"
@@ -41,15 +48,19 @@ sleep 120
 bin/certmanager-deploy.sh
 echo "Sleeping for a 60s so that the macbook can run background processes"
 sleep 60
-bin/ds-operator install
+# bin/ds-operator install
+echo "alternative way of installing ds-operator"
+kubectl apply -f https://github.com/ForgeRock/ds-operator/releases/download/v0.2.5/ds-operator.yaml
+sleep 120
+echo "installing secret agent"
 kubectl apply -f https://github.com/ForgeRock/secret-agent/releases/latest/download/secret-agent.yaml
-sleep 30
+sleep 120
+echo "applying secrets"
 kubectl apply -k kustomize/base/secrets/
-sleep 10
+sleep 60
 kubectl get sac
-sleep 10
-kubectl apply -k kustomize/base/secrets/
-skaffold config set default-repo docker.io/$YOURDOCKERUSERNAME  -k forgerockopenshift/api-crc-testing:6443/kubeadmin
+sleep 60
+skaffold config set default-repo docker.io/$YOURDOCKERUSERNAME  -k forgerockopenshift/api-crc-testing:6443/kube:admin
 skaffold run --profile small
 bin/forgeops info
 

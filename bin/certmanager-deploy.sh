@@ -58,8 +58,11 @@ EOF
         --namespace cert-manager \
         --create-namespace \
         --version $VERSION \
-        --values /tmp/cert-manager-values.yaml
+        --values /tmp/cert-manager-values.yaml \
+        --timeout 20m
 
+echo "sleeping after helm install of cert-manager"
+sleep 120
 
     # Install a self signed cluster issuer
     kubectl apply -f - <<EOF
