@@ -34,6 +34,10 @@ kubectl apply -f kustomize/base/openshift/ds-operator-role.yaml
 kubectl apply -f kustomize/base/openshift/standard.yml
 kubectl apply -f kustomize/base/openshift/fast.yml
 kubectl patch pv pv0014 pv0015 pv0016 pv0017 --type merge -p '{"spec":{"storageClassName": "fast"}}'
+
+echo "Sleeping before certdeploy"
+sleep 120
+
 bin/certmanager-deploy.sh
 echo "Sleeping for a 60s so that the macbook can run background processes"
 sleep 60
@@ -43,7 +47,8 @@ sleep 30
 kubectl apply -k kustomize/base/secrets/
 sleep 10
 kubectl get sac
-
+sleep 10
+kubectl apply -k kustomize/base/secrets/
 skaffold config set default-repo docker.io/$YOURDOCKERUSERNAME  -k forgerockopenshift/api-crc-testing:6443/kubeadmin
 skaffold run --profile small
 bin/forgeops info
