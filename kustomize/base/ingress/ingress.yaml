@@ -24,7 +24,7 @@ metadata:
       proxy_set_header X-ForgeRock-TransactionId $req_id;
   name: forgerock
 spec:
-  ingressClassName: nginx
+  #ingressClassName: nginx
   rules:
   - host: $(FQDN)
     http:
@@ -135,7 +135,7 @@ metadata:
     cert-manager.io/cluster-issuer: $(CERT_ISSUER)
 
 spec:
-  ingressClassName: nginx
+  #ingressClassName: nginx
   tls:
   - hosts:
     - $(FQDN)
